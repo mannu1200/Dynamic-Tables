@@ -1,0 +1,51 @@
+.removeRowButtons
+{
+  height: 20px;
+  width: 20px;
+  background-image: url(images/delete.png);
+  background-size: 25px 25px;
+  background-repeat: no-repeat;
+  border-radius: 20px;
+  background-color: #fff;
+  border: 0px;
+  outline: none;
+}
+
+.removeColumnButtons
+{
+  height: 20px;
+  width: 20px;
+  background-image:  url(images/delete.png);
+  background-size: 25px 25px;
+  border-radius: 20px;
+  background-repeat: no-repeat;
+  background-color: white;
+  border: 0px;
+  outline: none;
+}
+
+.headColumn
+{
+  width: 80%;
+  margin:auto;
+}
+
+.headColumnDiv{
+  text-align: center;
+}
+
+.removeTableButtons{
+
+}
+
+.addColumnButtons{
+
+}
+
+.addRowButtons{
+
+}
+
+.addTable{
+  
+}
