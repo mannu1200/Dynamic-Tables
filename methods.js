@@ -1,68 +1,81 @@
-var counter = 0;
+var tableNumber = 0;
+//tableNumber will decide the index of table
+
 var myDiv = [];
+//myDiv is an array of divs which will contain the tables
+
 var divIndexes = [];
-//divIndexes store the list of divs
-/*data[tableID*2]->number of rows in the table
-  data[tableID*2+1]->number of columns in the table*/
-var data = [];
+//As tables can be deleted, divIndexes will contain the list of indexes of which are present in myDiv
+
+var intialRows;
+//intialize it with number of rows you want the table to have initially
+
+var intialColumns = 3;
+//intialize it with number of columns you want the table to have initially
+
+var numberOfRowsAndColumns = [];
+/*array to store the number of rows and columns in every table
+  numberOfRowsAndColumns[tableID*2]->number of rows in the table
+  numberOfRowsAndColumns[tableID*2+1]->number of columns in the table*/
+
+
 //textboxID -> textbox+tableNumber+rowNumner+columNumber
 
 
 function addTable() {
-  divIndexes.push(counter);
-  myDiv[counter] = document.createElement('div');
+  divIndexes.push(tableNumber);
+  myDiv[tableNumber] = document.createElement('div');
   var Hline = document.createElement('HR');
-  document.getElementById('mainDiv').appendChild(myDiv[counter]);
-  myDiv[counter].appendChild(Hline);
-  myDiv[counter].id = counter;
+  document.getElementById('mainDiv').appendChild(myDiv[tableNumber]); //adding new created div to dom
+  myDiv[tableNumber].appendChild(Hline);
+  myDiv[tableNumber].id = tableNumber;
 
-  myDiv[counter].innerHTML = myDiv[counter].innerHTML + "Title:";
+  myDiv[tableNumber].innerHTML = myDiv[tableNumber].innerHTML + "Title:";
 
   var titleInput = document.createElement('Input');
   titleInput.type = 'Text';
-  titleInput.name = 'title' + counter.toString();
-  titleInput.id = "titleInput" + counter.toString();
-  myDiv[counter].appendChild(titleInput);
+  titleInput.name = 'title' + tableNumber.toString();
+  titleInput.id = "titleInput" + tableNumber.toString();
+  myDiv[tableNumber].appendChild(titleInput);
 
 
   var removeTablebutton = document.createElement('INPUT');
   removeTablebutton.type = 'BUTTON';
   removeTablebutton.addEventListener('click', removetable);
   removeTablebutton.value = 'Remove Table';
-  removeTablebutton.tableNumber = counter;
-  removeTablebutton.id = "removeTablebutton" + counter.toString();
-  removeTablebutton.className = "removeTablebuttons";
-  myDiv[counter].appendChild(removeTablebutton);
+  removeTablebutton.className = 'removeTableButtons';
+  removeTablebutton.tableNumber = tableNumber;                        
+  removeTablebutton.id = "removeTablebutton" + tableNumber.toString();
+  myDiv[tableNumber].appendChild(removeTablebutton);
 
 
-  data[counter * 2] = 0;
-  data[counter * 2 + 1] = 0;
+  numberOfRowsAndColumns[tableNumber * 2] = 0;
+  numberOfRowsAndColumns[tableNumber * 2 + 1] = 0;
 
   var table = document.createElement('TABLE');
-  table.border = 0;
-  table.id = "table" + counter.toString();
-  table.value = counter;
+  table.className = "tables";
+  table.id = "table" + tableNumber.toString();
+  table.value = tableNumber;
   var tableBody = document.createElement('tbody');
-  tableBody.id = 'tbody' + counter.toString();
+  tableBody.id = 'tbody' + tableNumber.toString();
   table.appendChild(tableBody);
-  var obj = {
-    target: {
-      tableNumber: counter
-    }
-  };
-  var innerDiv = document.createElement('div');
-  myDiv[counter].appendChild(innerDiv);
-  innerDiv.appendChild(table);
-  $("#table" + counter.toString()).css("display", "inline");
-  addRows(obj, 1);
 
+  var innerDiv = document.createElement('div');
+  myDiv[tableNumber].appendChild(innerDiv);
+  innerDiv.appendChild(table);
+
+  addRows({
+    target: {
+      tableNumber: tableNumber
+    }
+  },  intialRows || 2);
 
   var addColumnButton = document.createElement('INPUT');
   addColumnButton.type = 'BUTTON';
   addColumnButton.addEventListener('click', addColumns);
   addColumnButton.value = 'Add Columns';
-  addColumnButton.tableNumber = counter;
-  addColumnButton.id = "addColumnButton" + counter.toString();
+  addColumnButton.tableNumber = tableNumber;
+  addColumnButton.id = "addColumnButton" + tableNumber.toString();
   addColumnButton.className = 'addColumnButtons';
   innerDiv.appendChild(addColumnButton);
 
@@ -70,107 +83,112 @@ function addTable() {
   addRowButton.type = 'BUTTON';
   addRowButton.addEventListener('click', addRows);
   addRowButton.value = "Add Rows";
-  addRowButton.tableNumber = counter;
-  addRowButton.id = "addRowButton" + counter.toString();
+  addRowButton.tableNumber = tableNumber;
+  addRowButton.id = "addRowButton" + tableNumber;
   addRowButton.className = "addRowButtons";
-  myDiv[counter].appendChild(addRowButton);
+  myDiv[tableNumber].appendChild(addRowButton);
 
 
-  counter++;
+  tableNumber++;
 }
 
-function addRows(sender, count) {
-  var value = sender.target.tableNumber;
-  var currentTable = document.getElementById('table' + value.toString());
+
+
+function addRows(sender, count) {               //adds single row, single iteration of loop
+  var tableNumber = sender.target.tableNumber;
+  var currentTable = document.getElementById('table' + tableNumber);
   var row = currentTable.insertRow(-1);
-  row.id = 'tr' + value.toString() + data[value * 2];
-  var flag = 0;
-  if (data[value * 2 + 1] == 0) {
-    data[value * 2 + 1] = 2;
+  row.id = 'tr' + tableNumber + numberOfRowsAndColumns[tableNumber * 2];
+  var flag = 0;                                 //flag=1 will tell that it is first(0 index) row
+
+  if ( numberOfRowsAndColumns[tableNumber * 2 + 1] == 0) {
+    numberOfRowsAndColumns[tableNumber * 2 + 1] = ++intialColumns || 2; //here
     flag = 1;
   }
 
-  for (var i = 0; i <= data[value * 2 + 1] - 1; i++) {
+  for (var i = 0; i <= numberOfRowsAndColumns[tableNumber * 2 + 1] -1; i++) {
     var cell = row.insertCell(-1);
-    cell.id = 'td' + value.toString() + data[value * 2].toString() + i.toString();
-    if (i == 0 && flag == 1)
-    ;
+    cell.id = 'td' + tableNumber + numberOfRowsAndColumns[tableNumber * 2] + i;
+    if (i == 0 && flag == 1)//table00
+    /*Empty*/;
     else if (i == 0) {
       var delButton = document.createElement("Input");
       delButton.type = "button";
-      delButton.id = "delRowButton" + value.toString() + data[value * 2].toString() + i.toString();
+      delButton.id = "delRowButton" + tableNumber + numberOfRowsAndColumns[tableNumber * 2] + i;
       cell.appendChild(delButton);
       delButton.addEventListener("click", removeRow);
-      delButton.tableNumber = value;
-      delButton.rowNumber = data[value * 2].toString();
-      document.getElementById("delRowButton" + value + data[value * 2] + i).className = "removeRowButtons";
+      delButton.tableNumber = tableNumber;
+      delButton.rowNumber = numberOfRowsAndColumns[tableNumber * 2].toString();
+      delButton.className = "removeRowButtons";
     } else if (flag == 1) {
       var delDiv = document.createElement("DIV");
-      delDiv.id = "delDiv" + value.toString() + data[value * 2].toString() + i.toString();
+      delDiv.id = "delDiv" + tableNumber + numberOfRowsAndColumns[tableNumber * 2] + i;
       delDiv.className = 'headColumnDiv';
       cell.appendChild(delDiv);
 
       var textbox = document.createElement('input');
       textbox.type = 'Text';
-      textbox.id = "textbox" + value.toString() + data[value * 2].toString() + i.toString();
+      textbox.id = "textbox" + tableNumber + numberOfRowsAndColumns[tableNumber * 2] + i;
       textbox.placeholder = "Column name";
-      textbox.width = "80%";
-      textbox.className = "headColumn";
+      textbox.className = "headTextboxes";
       delDiv.appendChild(textbox);
 
       var delButton = document.createElement("input");
       delButton.type = "button";
-      delButton.id = "delColumnButton" + value.toString() + data[value * 2].toString() + i.toString();
+      delButton.id = "delColumnButton" + tableNumber + numberOfRowsAndColumns[tableNumber * 2] + i;
       delDiv.appendChild(delButton);
-      document.getElementById("delColumnButton" + value + data[value * 2] + i.toString()).className = "removeColumnButtons";
+      delButton.className = 'removeColumnButtons';
       delButton.addEventListener("click", removeColumn);
-      delButton.tableNumber = value;
+      delButton.tableNumber = tableNumber;
       delButton.columnNumber = i;
-      flag = 0;
     } else {
       var textbox = document.createElement("INPUT");
       textbox.type = "text";
-      textbox.id = "textbox" + value.toString() + data[value * 2].toString() + i.toString();
+      textbox.id = "textbox" + tableNumber + numberOfRowsAndColumns[tableNumber * 2] + i;
+      textbox.className = 'textboxes';
       cell.appendChild(textbox);
     }
   }
-  data[value * 2]++;
+  numberOfRowsAndColumns[tableNumber * 2]++;
   if (count)
     addRows(sender, count - 1);
 }
 
 function addColumns(sender, count) {
-  var value = sender.target.tableNumber;
-  var currentTable = document.getElementById("table" + value.toString());
-  for (var i = 0; i <= data[value * 2] - 1; i++) {
+  var tableNumber = sender.target.tableNumber;
+  var currentTable = document.getElementById("table" + tableNumber.toString());
+  for (var i = 0; i <= numberOfRowsAndColumns[tableNumber * 2] - 1; i++) {
     var cell = currentTable.rows[i].insertCell(-1);
-    cell.id = "td" + value.toString() + i.toString() + data[value * 2 + 1].toString();
+    cell.id = "td" + tableNumber + i + numberOfRowsAndColumns[tableNumber * 2 + 1];
     if (i == 0) {
       var delDiv = document.createElement('div');
-      delDiv.id = "delDiv" + value.toString() + i.toString() + data[value * 2 + 1].toString();
+      delDiv.id = "delDiv" + tableNumber + i + numberOfRowsAndColumns[tableNumber * 2 + 1];
+      delDiv.className = 'headColumnDiv';
       cell.appendChild(delDiv);
 
       var textbox = document.createElement('input');
       textbox.type = 'text';
-      textbox.id = "textbox" + value.toString() + i.toString() + data[value * 2 + 1].toString();
+      textbox.id = "textbox" + tableNumber + i + numberOfRowsAndColumns[tableNumber * 2 + 1];
+      textbox.className = 'headTextboxes';
       textbox.placeholder = "Column name";
       delDiv.appendChild(textbox);
       var delButton = document.createElement("input");
       delButton.type = "button";
-      delButton.id = "delColumnButton" + value.toString() + i.toString() + data[value * 2 + 1].toString();
-      delDiv.appendChild(delButton);
-      document.getElementById("delColumnButton" + value + i + data[value * 2 + 1]).className = "removeColumnButtons";
+      delButton.id = "delColumnButton" + tableNumber + i + numberOfRowsAndColumns[tableNumber * 2 + 1];
+      delButton.className = "removeColumnButtons";
       delButton.addEventListener("click", removeColumn);
-      delButton.tableNumber = value;
-      delButton.columnNumber = (data[value * 2 + 1]).toString();
+      delButton.tableNumber = tableNumber;
+      delButton.columnNumber = (numberOfRowsAndColumns[tableNumber * 2 + 1]).toString();
+      delDiv.appendChild(delButton);
     } else {
       var textbox = document.createElement("INPUT");
       textbox.type = "text";
-      textbox.id = "textbox" + value.toString() + i.toString() + data[value * 2 + 1].toString();
+      textbox.className = 'textboxes';
+      textbox.id = "textbox" + tableNumber.toString() + i.toString() + numberOfRowsAndColumns[tableNumber * 2 + 1].toString();
       cell.appendChild(textbox);
     }
   }
-  data[value * 2 + 1]++;
+  numberOfRowsAndColumns[tableNumber * 2 + 1]++;
 }
 
 function postData() {
@@ -196,10 +214,10 @@ function postData() {
       row: []
     };
 
-    for (var j = 0; j < data[i * 2]; j++) {
+    for (var j = 0; j < numberOfRowsAndColumns[i * 2]; j++) {
       var tempArr = [];
-      for (var k = 1; k < data[i * 2 + 1]; k++) {
-        tempArr[k] = document.getElementById("textbox" + i.toString() + j.toString() + k.toString()).value;
+      for (var k = 1; k < numberOfRowsAndColumns[i * 2 + 1]; k++) {
+        tempArr[k] = document.getElementById("textbox" + i + j + k).value;
       }
       temp.row.push(tempArr);
     }
@@ -217,41 +235,41 @@ function postData() {
       if (data.error) {
         alert("some error occurred at server, values not inserted");
       } else {
-        alert("Chart Uploaded");
+        alert("Table Uploaded");
         location.reload();
       }
     }
   });
 }
 
+
 function removeColumn(sender) {
   var tableNumber = sender.target.tableNumber;
   var columnNumber = sender.target.columnNumber;
-  var rowNumber = sender.target.rowNumber;
-  for (var i = 0; i < data[tableNumber * 2]; i++) {
-    document.getElementById('tr' + tableNumber.toString() + i.toString()).removeChild(document.getElementById('td' + tableNumber + i + columnNumber));
-    for (var j = parseInt(columnNumber) + 1; j < data[tableNumber * 2 + 1]; j++) {
+  for (var i = 0; i < numberOfRowsAndColumns[tableNumber * 2]; i++) {
+    document.getElementById('tr' + tableNumber + i).removeChild(document.getElementById('td' + tableNumber + i + columnNumber));
+    for (var j = parseInt(columnNumber) + 1; j < numberOfRowsAndColumns[tableNumber * 2 + 1]; j++) {
       if (i == 0) {
         document.getElementById('delColumnButton' + tableNumber + i + j).columnNumber -= 1;
         document.getElementById('delColumnButton' + tableNumber + i + j).id = 'delColumnButton' + tableNumber + i + (j - 1);
       } else {
-        document.getElementById('textbox' + tableNumber.toString() + i.toString() + j.toString()).id = 'textbox' + tableNumber + i.toString() + (j - 1).toString();
+        document.getElementById('textbox' + tableNumber + i + j).id = 'textbox' + tableNumber + i + (j - 1);
       }
-      document.getElementById('td' + tableNumber.toString() + i.toString() + j.toString()).id = 'td' + tableNumber + i.toString() + (j - 1).toString();
+      document.getElementById('td' + tableNumber + i + j).id = 'td' + tableNumber + i + (j - 1);
     }
   }
-  data[tableNumber * 2 + 1]--;
+  numberOfRowsAndColumns[tableNumber * 2 + 1]--;
 }
+
 
 function removeRow(sender) {
   var tableNumber = sender.target.tableNumber;
-  var columnNumber = sender.target.columnNumber;
   var rowNumber = sender.target.rowNumber;
   document.getElementById('tbody' + tableNumber).removeChild(document.getElementById('tr' + tableNumber + rowNumber));
 
-  for (var i = parseInt(rowNumber) + 1; i < data[tableNumber * 2]; i++) {
+  for (var i = parseInt(rowNumber) + 1; i < numberOfRowsAndColumns[tableNumber * 2]; i++) {
     document.getElementById('tr' + tableNumber + i).id = 'tr' + tableNumber + (i - 1);
-    for (var j = 0; j < data[tableNumber * 2 + 1]; j++) {
+    for (var j = 0; j < numberOfRowsAndColumns[tableNumber * 2 + 1]; j++) {
       if (j == 0) {
         document.getElementById('delRowButton' + tableNumber + i + j).rowNumber -= 1;
         document.getElementById('delRowButton' + tableNumber + i + j).id = 'delRowButton' + tableNumber + (i - 1) + j;
@@ -261,18 +279,20 @@ function removeRow(sender) {
       document.getElementById('td' + tableNumber + i + j).id = 'td' + tableNumber + (i - 1) + j;
     }
   }
-  data[tableNumber * 2]--;
+  numberOfRowsAndColumns[tableNumber * 2]--;
 }
 
 function removetable(sender) {
   var r = confirm("Are you sure you want to delete it?");
-  if (r == true) {} else {
+  if (r == true) {
+    //Empty
+  } else {
     return false;
   }
-  var count = sender.target.tableNumber;
+  var tableToBeRemoved = sender.target.tableNumber;
   var i;
   for (i = 0; divIndexes[i] != undefined; i++) {
-    if (count == divIndexes[i])
+    if (tableToBeRemoved == divIndexes[i])
       break;
   }
 
@@ -280,5 +300,5 @@ function removetable(sender) {
     divIndexes[i] = divIndexes[i + 1];
   }
   divIndexes.pop();
-  document.getElementById('mainDiv').removeChild(myDiv[count]);
+  document.getElementById('mainDiv').removeChild(myDiv[tableToBeRemoved]);
 }

@@ -1,5 +1,14 @@
-.removeRowButtons
-{
+.tables {
+  display: inline;
+}
+
+
+.headColumnDiv {
+  text-align: center;
+}
+
+
+.removeRowButtons {
   height: 20px;
   width: 20px;
   background-image: url(images/delete.png);
@@ -11,8 +20,7 @@
   outline: none;
 }
 
-.removeColumnButtons
-{
+.removeColumnButtons {
   height: 20px;
   width: 20px;
   background-image:  url(images/delete.png);
@@ -24,28 +32,24 @@
   outline: none;
 }
 
-.headColumn
-{
+
+.removeTableButtons {
+
+}
+
+.addColumnButtons {
+
+}
+
+.addRowButtons {
+
+}
+
+.headTextboxes {
   width: 80%;
   margin:auto;
 }
 
-.headColumnDiv{
-  text-align: center;
-}
+.textboxes {
 
-.removeTableButtons{
-
-}
-
-.addColumnButtons{
-
-}
-
-.addRowButtons{
-
-}
-
-.addTable{
-  
 }
