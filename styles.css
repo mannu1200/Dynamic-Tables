@@ -7,6 +7,10 @@
   text-align: center;
 }
 
+.hLines {
+  width: 100%
+}
+
 
 .removeRowButtons {
   height: 20px;
@@ -34,10 +38,23 @@
 
 
 .removeTableButtons {
-
+  background-image: url(images/cancel.png);
+  background-repeat: no-repeat;
+  outline:none; 
+  background-color: white;
+  border-radius: 20px;
+  border:10px;
+  background-size:25px 25px;
+  height: 20px;
 }
 
 .addColumnButtons {
+  /*background-image: url(images/down.png);
+  background-color: white;
+  outline: none;
+  border: 0px;*/
+  content: "Add column"
+  height: 40px; 
 
 }
 

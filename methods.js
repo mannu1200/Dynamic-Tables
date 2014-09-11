@@ -7,17 +7,27 @@ var myDiv = [];
 var divIndexes = [];
 //As tables can be deleted, divIndexes will contain the list of indexes of which are present in myDiv
 
-var intialRows;
-//intialize it with number of rows you want the table to have initially
 
-var intialColumns = 3;
-//intialize it with number of columns you want the table to have initially
+//intialize them with number of rows and columns you want the table to have initially (when it is created)
+var initialRows = null;
+var initialColumns = null;
 
 var numberOfRowsAndColumns = [];
 /*array to store the number of rows and columns in every table
   numberOfRowsAndColumns[tableID*2]->number of rows in the table
   numberOfRowsAndColumns[tableID*2+1]->number of columns in the table*/
 
+/*
+  action          tableNumber   myDiv     divIndexes  numberOfRowsAndColumns
+  add table         0           [table0]   [0]          [3,3]
+
+  add_row(table0)   0           [table0]   [0]          [4,3]
+
+  add table         1           [table0,   [0,1]        [4,3,3,3]
+                                table1]
+
+  delete table0     0           [table1]   [1]          [undefined,undefined,3,3]                         
+*/
 
 //textboxID -> textbox+tableNumber+rowNumner+columNumber
 
@@ -25,10 +35,11 @@ var numberOfRowsAndColumns = [];
 function addTable() {
   divIndexes.push(tableNumber);
   myDiv[tableNumber] = document.createElement('div');
-  var Hline = document.createElement('HR');
-  document.getElementById('mainDiv').appendChild(myDiv[tableNumber]); //adding new created div to dom
-  myDiv[tableNumber].appendChild(Hline);
+  var hLine = document.createElement('HR');
+  hLine.className = "hLines";
+  myDiv[tableNumber].appendChild(hLine);
   myDiv[tableNumber].id = tableNumber;
+  document.getElementById('mainDiv').appendChild(myDiv[tableNumber]); //adding new created div to dom
 
   myDiv[tableNumber].innerHTML = myDiv[tableNumber].innerHTML + "Title:";
 
@@ -42,9 +53,9 @@ function addTable() {
   var removeTablebutton = document.createElement('INPUT');
   removeTablebutton.type = 'BUTTON';
   removeTablebutton.addEventListener('click', removetable);
-  removeTablebutton.value = 'Remove Table';
+  removeTablebutton.value = '    Remove Table';
   removeTablebutton.className = 'removeTableButtons';
-  removeTablebutton.tableNumber = tableNumber;                        
+  removeTablebutton.tableNumber = tableNumber;
   removeTablebutton.id = "removeTablebutton" + tableNumber.toString();
   myDiv[tableNumber].appendChild(removeTablebutton);
 
@@ -68,7 +79,7 @@ function addTable() {
     target: {
       tableNumber: tableNumber
     }
-  },  intialRows || 2);
+  }, initialRows || 2);
 
   var addColumnButton = document.createElement('INPUT');
   addColumnButton.type = 'BUTTON';
@@ -94,23 +105,24 @@ function addTable() {
 
 
 
-function addRows(sender, count) {               //adds single row, single iteration of loop
+function addRows(sender, count) { //adds single row, single iteration of loop
   var tableNumber = sender.target.tableNumber;
   var currentTable = document.getElementById('table' + tableNumber);
   var row = currentTable.insertRow(-1);
   row.id = 'tr' + tableNumber + numberOfRowsAndColumns[tableNumber * 2];
-  var flag = 0;                                 //flag=1 will tell that it is first(0 index) row
+  var flag = 0; //flag=1 will tell that it is first(0 index) row
 
-  if ( numberOfRowsAndColumns[tableNumber * 2 + 1] == 0) {
-    numberOfRowsAndColumns[tableNumber * 2 + 1] = ++intialColumns || 2; //here
+  if (numberOfRowsAndColumns[tableNumber * 2 + 1] == 0) {
+    numberOfRowsAndColumns[tableNumber * 2 + 1] = initialColumns ? ++initialColumns : 3;
     flag = 1;
   }
 
-  for (var i = 0; i <= numberOfRowsAndColumns[tableNumber * 2 + 1] -1; i++) {
+  for (var i = 0; i <= numberOfRowsAndColumns[tableNumber * 2 + 1] - 1; i++) {
     var cell = row.insertCell(-1);
     cell.id = 'td' + tableNumber + numberOfRowsAndColumns[tableNumber * 2] + i;
-    if (i == 0 && flag == 1)//table00
-    /*Empty*/;
+    if (i == 0 && flag == 1) //table00
+    /*Empty*/
+    ;
     else if (i == 0) {
       var delButton = document.createElement("Input");
       delButton.type = "button";
@@ -225,7 +237,7 @@ function postData() {
   }
   console.log(Mydata);
   $.ajax({
-    url: "/URL",
+    url: "/",
     type: "post",
     data: {
       data: Mydata
@@ -283,7 +295,7 @@ function removeRow(sender) {
 }
 
 function removetable(sender) {
-  var r = confirm("Are you sure you want to delete it?");
+  var r = confirm("Are you sure you want to delete the table?");
   if (r == true) {
     //Empty
   } else {
@@ -301,4 +313,6 @@ function removetable(sender) {
   }
   divIndexes.pop();
   document.getElementById('mainDiv').removeChild(myDiv[tableToBeRemoved]);
+  delete numberOfRowsAndColumns[tableToBeRemoved * 2];
+  delete numberOfRowsAndColumns[tableToBeRemoved * 2 + 1];
 }
